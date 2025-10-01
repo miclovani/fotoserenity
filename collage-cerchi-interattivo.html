@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collage Cerchi Interattivo</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        #collage { display: flex; flex-wrap: wrap; width: 80%; height: 80vh; border: 2px dashed #ccc; position: relative; }
+        .circle { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #000; position: absolute; display: flex; justify-content: center; align-items: center; }
+        img { max-width: 100%; max-height: 100%; }
+        button { margin: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Collage Cerchi Interattivo</h1>
+    <div id="collage"></div>
+    <button id="print">Stampa Collage</button>
+    <button id="clear">Svuota Collage</button>
+
+    <script>
+        const collage = document.getElementById('collage');
+        const printButton = document.getElementById('print');
+        const clearButton = document.getElementById('clear');
+
+        function createCircle(x, y) {
+            const circle = document.createElement('div');
+            circle.className = 'circle';
+            circle.style.left = x + 'px';
+            circle.style.top = y + 'px';
+            circle.setAttribute('draggable', 'true');
+            circle.ondragstart = function(event) {
+                event.dataTransfer.setData('text/plain', null);
+                event.dataTransfer.setData('text/plain', JSON.stringify({ x, y }));
+            };
+
+            circle.ondragover = function(event) {
+                event.preventDefault();
+            };
+
+            circle.ondrop = function(event) {
+                event.preventDefault();
+                const data = JSON.parse(event.dataTransfer.getData('text/plain'));
+                const newX = event.clientX - circle.offsetWidth / 2;
+                const newY = event.clientY - circle.offsetHeight / 2;
+                circle.style.left = newX + 'px';
+                circle.style.top = newY + 'px';
+            };
+
+            collage.appendChild(circle);
+        }
+
+        for (let i = 0; i < 5; i++) {
+            createCircle(Math.random() * (collage.clientWidth - 100), Math.random() * (collage.clientHeight - 100));
+        }
+
+        printButton.onclick = function() {
+            window.print();
+        };
+
+        clearButton.onclick = function() {
+            collage.innerHTML = '';
+        };
+    </script>
+</body>
+</html>
